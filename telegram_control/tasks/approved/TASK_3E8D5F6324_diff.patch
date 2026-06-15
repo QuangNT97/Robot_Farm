@@ -1,0 +1,84 @@
+diff --git a/telegram_control/services/project_process_service.py b/telegram_control/services/project_process_service.py
+index beaf6a9..0faec13 100644
+--- a/telegram_control/services/project_process_service.py
++++ b/telegram_control/services/project_process_service.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+ import asyncio
++import os
+ 
+ 
+ _process: asyncio.subprocess.Process | None = None
+@@ -14,9 +15,10 @@ async def run_project(settings) -> str:
+     if not settings.run_project_command:
+         return "RUN_PROJECT_COMMAND chưa được cấu hình trong .env"
+ 
+-    _command = settings.run_project_command
++    command: str = settings.run_project_command
++    _command = command
+     _process = await asyncio.create_subprocess_shell(
+-        _command,
++        command,
+         cwd=str(settings.project_root),
+         stdout=asyncio.subprocess.DEVNULL,
+         stderr=asyncio.subprocess.DEVNULL,
+@@ -32,7 +34,19 @@ async def stop_project() -> str:
+         return "Không có project nào đang chạy bởi bot."
+ 
+     pid = _process.pid
+-    _process.terminate()
++    if os.name == "nt":
++        killer = await asyncio.create_subprocess_exec(
++            "taskkill",
++            "/PID",
++            str(pid),
++            "/T",
++            "/F",
++            stdout=asyncio.subprocess.DEVNULL,
++            stderr=asyncio.subprocess.DEVNULL,
++        )
++        await killer.wait()
++    else:
++        _process.terminate()
+     try:
+         await asyncio.wait_for(_process.wait(), timeout=10)
+     except asyncio.TimeoutError:
+diff --git a/telegram_control/tasks/approved/TASK_7005EB7A22.json b/telegram_control/tasks/approved/TASK_7005EB7A22.json
+deleted file mode 100644
+index b4cba23..0000000
+--- a/telegram_control/tasks/approved/TASK_7005EB7A22.json
++++ /dev/null
+@@ -1,31 +0,0 @@
+-{
+-  "task_id": "TASK_7005EB7A22",
+-  "type": "ai_code",
+-  "status": "waiting_approval",
+-  "created_at": "2026-06-08T00:15:52+07:00",
+-  "created_by": {
+-    "user_id": 8823992411,
+-    "username": null,
+-    "full_name": "Thành Quang"
+-  },
+-  "chat_id": -5154140889,
+-  "request": "sửa code opencv_camera.py hiển thị ảnh gray",
+-  "ai_plan": {
+-    "title": "Display OpenCV camera preview in grayscale",
+-    "plan": [
+-      "Update Project_Farm_Here/opencv_camera.py to describe grayscale preview.",
+-      "Convert each captured BGR frame to grayscale using cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY).",
+-      "Display the grayscale frame with cv2.imshow while keeping existing camera options and quit keys unchanged."
+-    ],
+-    "summary": "opencv_camera.py will show the webcam preview in grayscale instead of color. No files will be written until the user approves this proposed change.",
+-    "file_changes": [
+-      {
+-        "path": "Project_Farm_Here/opencv_camera.py",
+-        "content": "\"\"\"Simple OpenCV grayscale camera preview.\n\nRun:\n    python Project_Farm_Here/opencv_camera.py\n\nPress `q` or `Esc` to close the camera window.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\n\nimport cv2\n\n\ndef parse_args() -> argparse.Namespace:\n    parser = argparse.ArgumentParser(description=\"Display a grayscale webcam preview using OpenCV.\")\n    parser.add_argument(\"--camera-index\", type=int, default=0, help=\"Camera device index.\")\n    parser.add_argument(\"--width\", type=int, default=640, help=\"Requested preview width.\")\n    parser.add_argument(\"--height\", type=int, default=480, help=\"Requested preview height.\")\n    return parser.parse_args()\n\n\ndef main() -> int:\n    args = parse_args()\n    cap = cv2.VideoCapture(args.camera_index)\n    if not cap.isOpened():\n        print(f\"ERROR: Cannot open camera index {args.camera_index}\")\n        return 1\n\n    cap.set(cv2.CAP_PROP_FRAME_WIDTH, args.width)\n    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, args.height)\n\n    window_name = \"RoboLife Farm - OpenCV Camera Gray\"\n    print(\"Camera opened in grayscale mode. Press 'q' or Esc to exit.\")\n\n    try:\n        while True:\n            ok, frame = cap.read()\n            if not ok:\n                print(\"ERROR: Cannot read frame from camera\")\n                return 1\n\n            gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)\n            cv2.imshow(window_name, gray_frame)\n\n            key = cv2.waitKey(1) & 0xFF\n            if key in (ord(\"q\"), 27):\n                break\n    finally:\n        cap.release()\n        cv2.destroyAllWindows()\n\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+-        "reason": "Convert camera frames from BGR color to grayscale before displaying them."
+-      }
+-    ],
+-    "build_command": "python -m py_compile Project_Farm_Here/opencv_camera.py"
+-  },
+-  "planned_at": "2026-06-08T00:28:54+07:00"
+-}
+\ No newline at end of file

@@ -1,0 +1,58 @@
+diff --git a/Project_Farm_Here/opencv_camera.py b/Project_Farm_Here/opencv_camera.py
+index 9fda611..5401bc0 100644
+--- a/Project_Farm_Here/opencv_camera.py
++++ b/Project_Farm_Here/opencv_camera.py
+@@ -1,4 +1,4 @@
+-"""Simple OpenCV camera preview.
++"""Simple OpenCV grayscale camera preview.
+ 
+ Run:
+     python Project_Farm_Here/opencv_camera.py
+@@ -14,7 +14,7 @@ import cv2
+ 
+ 
+ def parse_args() -> argparse.Namespace:
+-    parser = argparse.ArgumentParser(description="Display a webcam preview using OpenCV.")
++    parser = argparse.ArgumentParser(description="Display a grayscale webcam preview using OpenCV.")
+     parser.add_argument("--camera-index", type=int, default=0, help="Camera device index.")
+     parser.add_argument("--width", type=int, default=640, help="Requested preview width.")
+     parser.add_argument("--height", type=int, default=480, help="Requested preview height.")
+@@ -31,8 +31,8 @@ def main() -> int:
+     cap.set(cv2.CAP_PROP_FRAME_WIDTH, args.width)
+     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, args.height)
+ 
+-    window_name = "RoboLife Farm - OpenCV Camera"
+-    print("Camera opened. Press 'q' or Esc to exit.")
++    window_name = "RoboLife Farm - OpenCV Camera Gray"
++    print("Camera opened in grayscale mode. Press 'q' or Esc to exit.")
+ 
+     try:
+         while True:
+@@ -40,7 +40,10 @@ def main() -> int:
+             if not ok:
+                 print("ERROR: Cannot read frame from camera")
+                 return 1
+-            cv2.imshow(window_name, frame)
++
++            gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
++            cv2.imshow(window_name, gray_frame)
++
+             key = cv2.waitKey(1) & 0xFF
+             if key in (ord("q"), 27):
+                 break
+diff --git a/telegram_control/services/ai_devops_worker.py b/telegram_control/services/ai_devops_worker.py
+index 6ebd5ba..eeba328 100644
+--- a/telegram_control/services/ai_devops_worker.py
++++ b/telegram_control/services/ai_devops_worker.py
+@@ -45,5 +45,9 @@ async def _loop(app: Application) -> None:
+             (AI_LOG_DIR / "ai_devops_worker_error.log").write_text(str(exc), encoding="utf-8")
+             chat_id = settings.allowed_group_id or settings.allowed_chat_id
+             if chat_id:
+-                await app.bot.send_message(chat_id=chat_id, text=f"❌ AI DevOps worker error: {exc}")
++                await app.bot.send_message(
++                    chat_id=chat_id,
++                    text=f"❌ AI DevOps worker error: {exc}\n\nWorker đã dừng để tránh spam Telegram. Hãy sửa lỗi rồi khởi động lại bot.",
++                )
++            return
+         await asyncio.sleep(max(1, settings.ai_task_poll_seconds))
+\ No newline at end of file

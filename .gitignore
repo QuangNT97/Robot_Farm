@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+telegram_control/logs/
+telegram_control/tasks/*
+!telegram_control/tasks/.gitkeep
+!telegram_control/tasks/pending/
+!telegram_control/tasks/approved/
+!telegram_control/tasks/completed/
+!telegram_control/tasks/failed/
+!telegram_control/tasks/running/
+!telegram_control/tasks/waiting_approval/
+!telegram_control/tasks/**/.gitkeep
