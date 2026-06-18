@@ -50,6 +50,8 @@
     Zero Polling: Do not use while() loops to wait for hardware flags. Utilize Zephyr’s asynchronous APIs or interrupt-driven callbacks for all communication.  
 
     Hardware Agnostic: motor_hw must remain strictly agnostic of state-machine logic. It executes physical commands without knowledge of the current state of the motor.
+    motor_hw will send pulse to step driver CL57C through pin PA8 of stm32 which using PWM
+    motor_hw will disable/enable driver through PE3 (PE3 HIGH = enable motor, PE3 LOW == disable motor)
 **Alarm/Fault Feedback**
     The CL57C driver provides an `ALM` (Alarm) output signal to indicate system errors. The `motor_hw` component must configure an External Interrupt (ISR) to monitor this signal in real-time. Upon activation, the ISR shall immediately notify a event to motor_task. motor_task will handle and change motor_sm to `MOTOR_FAULT` state.
 
