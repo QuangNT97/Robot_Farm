@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiến Trúc Hệ Thống Chi Tiết - Agriculture Auto Robot</title>
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --secondary-color: #1e293b;
+            --accent-blue: #0284c7;
+            --accent-purple: #7c3aed;
+            --accent-green: #059669;
+            --accent-red: #dc2626;
+            --bg-light: #f8fafc;
+            --border-color: #cbd5e1;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.7;
+            color: #334155;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        header {
+            border-bottom: 3px solid var(--accent-blue);
+            padding-bottom: 30px;
+            margin-bottom: 50px;
+        }
+
+        header h1 {
+            color: var(--text-dark);
+            margin: 0 0 10px 0;
+            font-size: 34px;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            margin: 0;
+            color: var(--accent-blue);
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        h2 {
+            color: var(--text-dark);
+            border-left: 6px solid var(--accent-blue);
+            padding-left: 15px;
+            margin-top: 50px;
+            margin-bottom: 25px;
+            font-size: 26px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            margin-top: 35px;
+            font-size: 20px;
+            border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 8px;
+        }
+
+        p, li {
+            font-size: 16px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            padding-left: 25px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-family: monospace;
+        }
+
+        /* --- SƠ ĐỒ KHỐI GIAO TIẾP (INTER-TASK COMMUNICATION DIAGRAM) --- */
+        .diagram-section {
+            background: var(--bg-light);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin: 30px 0;
+            overflow-x: auto;
+        }
+
+        .block-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 1000px;
+        }
+
+        .block-node {
+            background: #ffffff;
+            border: 2px solid var(--secondary-color);
+            border-radius: 10px;
+            padding: 20px;
+            width: 260px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .block-node h4 {
+            margin: 0 0 12px 0;
+            font-size: 18px;
+            text-align: center;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .node-cmd { border-color: var(--accent-purple); }
+        .node-cmd h4 { color: var(--accent-purple); }
+        .node-motor { border-color: var(--accent-green); }
+        .node-motor h4 { color: var(--accent-green); }
+        .node-master { border-color: #475569; }
+        .node-master h4 { color: #475569; }
+
+        .node-sub {
+            font-size: 13px;
+            background: #f8fafc;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-top: 6px;
+            border-left: 3px solid var(--border-color);
+            font-family: monospace;
+        }
+        .node-cmd .node-sub { border-left-color: var(--accent-purple); }
+        .node-motor .node-sub { border-left-color: var(--accent-green); }
+
+        .diagram-arrow {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 20px;
+            position: relative;
+        }
+
+        .arrow-line {
+            width: 100%;
+            height: 3px;
+            background: #94a3b8;
+            position: relative;
+        }
+
+        .arrow-line::after {
+            content: '';
+            position: absolute;
+            right: -2px;
+            top: -5px;
+            width: 0;
+            height: 0;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 10px solid #94a3b8;
+        }
+
+        .arrow-text {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            background: #ffffff;
+            padding: 3px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .arrow-text.queue {
+            color: var(--accent-blue);
+            border-color: #bae6fd;
+            background: #f0f9ff;
+        }
+
+        /* --- PHÂN TẦNG KIẾN TRÚC --- */
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 25px;
+        }
+
+        .task-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        .task-card.cmd-card { border-top: 5px solid var(--accent-purple); }
+        .task-card.motor-card { border-top: 5px solid var(--accent-green); }
+
+        .layer-item {
+            background: var(--bg-light);
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .layer-item strong {
+            color: var(--text-dark);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* --- TABLES & CODE --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+            font-size: 15px;
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--bg-light);
+        }
+
+        pre {
+            background-color: #1e1e1e;
+            color: #f8f8f2;
+            padding: 15px 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 14px;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .alert-panel {
+            background-color: #fff1f2;
+            border-left: 4px solid var(--accent-red);
+            color: #9f1239;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Tài Liệu Thiết Kế Kiến Trúc Hệ Thống Chi Tiết</h1>
+        <p>Hệ thống: Robot Nông Nghiệp Tự Động (Agriculture Auto Robot) | Nền tảng Zephyr RTOS</p>
+    </header>
+
+    <h2>1. Mô Hình Sơ Đồ Khối Và Luồng Giao Tiếp Liên Nhiệm Vụ</h2>
+    <p>Hệ thống vận hành dựa trên hai tác vụ cốt lõi: <span class="highlight">cmd_task</span> và <span class="highlight">motor_task</span>. Cơ chế truyền thông được tổ chức theo mô hình bất đồng bộ luồng dữ liệu một chiều độc lập (Producer-Consumer Pattern) thông qua tính năng hàng đợi thông điệp an toàn của hệ điều hành Zephyr RTOS.</p>
+
+    <div class="diagram-section">
+        <div class="block-diagram">
+            <div class="block-node node-master">
+                <h4>MASTER NODE</h4>
+                <div style="font-size: 12px; text-align: center; color: var(--text-muted); margin-bottom: 10px;">PC / Raspberry Pi</div>
+                <div class="node-sub">Phát Frame lệnh qua: Wifi, Webserver, Bluetooth, UART</div>
+            </div>
+
+            <div class="diagram-arrow">
+                <div class="arrow-text">Chuỗi Byte Thô (Raw Bytes)</div>
+                <div class="arrow-line"></div>
+                <div style="font-size: 11px; color: var(--accent-purple); margin-top: 4px; font-weight: bold;">Ngắt Ngoại Vi (ISR)</div>
+            </div>
+
+            <div class="block-node node-cmd">
+                <h4>CMD TASK (Producer)</h4>
+                <div class="node-sub">⚡ cmd_hw: UART Async/Ring Buffer</div>
+                <div class="node-sub">🔍 cmd_receiver: Gom chuỗi nhận dạng frame</div>
+                <div class="node-sub">⚙️ cmd_parser: Kiểm tra CRC & Ánh xạ cấu trúc</div>
+            </div>
+
+            <div class="diagram-arrow">
+                <div class="arrow-text queue">Zephyr Message Queue (k_msgq)</div>
+                <div class="arrow-line"></div>
+                <div style="font-size: 11px; color: var(--accent-blue); margin-top: 4px; font-family: monospace;">Ghi: MotorMessage_t</div>
+            </div>
+
+            <div class="block-node node-motor">
+                <h4>MOTOR TASK (Consumer)</h4>
+                <div class="node-sub">🔄 motor_task: Đọc block hàng đợi</div>
+                <div class="node-sub">📊 motor_sm: Cập nhật trạng thái (FSM)</div>
+                <div class="node-sub">🔌 motor_drv & hw: Phát xung vật lý</div>
+            </div>
+        </div>
+    </div>
+
+    <h2>2. Phân Tích Chuyên Sâu Tác Vụ Điều Khiển Lệnh (CMD TASK)</h2>
+    <p>Tác vụ <span class="highlight">cmd_task</span> đóng vai trò là cổng vào dữ liệu (Ingestion Gateway) của hệ thống. Để đạt mục tiêu xử lý thời gian thực không làm mất mát dữ liệu khi Master truyền dòng dữ liệu tốc độ cao, <code>cmd_task</code> được Module hóa thành 3 thành phần chính:</p>
+    
+    <div class="architecture-grid">
+        <div class="task-card cmd-card">
+            <h3>Cấu Trúc Các Thành Phần Của CMD TASK</h3>
+            
+            <div class="layer-item">
+                <strong>1. cmd_hw (Hardware Wrapper Layer)</strong>
+                Lớp cấu hình ngoại vi thấp nhất. Tương tác trực tiếp với bộ điều khiển UART của chip STM32F407 thông qua <code>Zephyr Async UART API</code>. Module này tích hợp cấu trúc bộ đệm vòng (Ring Buffer) liên kết trực tiếp với DMA phần cứng để tự động lưu trữ dữ liệu luồng mà không cần CPU can thiệp liên tục.
+            </div>
+
+            <div class="layer-item">
+                <strong>2. cmd_receiver (Stream Processing Layer)</strong>
+                Được kích hoạt bởi sự kiện ngắt từ lớp hạ tầng. Nhiệm vụ chính là quét dòng dữ liệu liên tục trong Ring Buffer để tìm ra điểm bắt đầu (Header) và kết thúc (End) của một Frame lệnh hợp lệ, loại bỏ các byte nhiễu trên đường truyền trước khi chuyển tiếp.
+            </div>
+
+            <div class="layer-item">
+                <strong>3. cmd_parser (Business Logic Layer)</strong>
+                Tầng xử lý logic nghiệp vụ phân rã dữ liệu tĩnh. Sau khi nhận được một chuỗi byte thô đã định hình cấu trúc, lớp này thực hiện thuật toán tính toán mã kiểm tra sai số hình học (CRC Checksum). Nếu kiểm tra thành công, nó bóc tách payload và đóng gói thông tin vào cấu trúc <code>MotorMessage_t</code>.
+            </div>
+        </div>
+
+        <div class="task-card cmd-card">
+            <h3>Quy Trình Xử Lý Và Ràng Buộc Kỹ Thuật</h3>
+            <p><strong>Cơ chế Zero Polling:</strong> Tác vụ hoàn toàn không sử dụng vòng lặp vô hạn để kiểm tra cờ (polling). Luồng hoạt động hoàn toàn dựa trên sự kiện (Event-driven) thông qua cơ chế Callback ngắt của hệ điều hành Zephyr.</p>
+            
+            <p><strong>Cấu trúc giao diện dữ liệu chung:</strong> Định dạng Frame giao tiếp vật lý từ Master được quy định nghiêm ngặt theo bảng dưới đây trước khi được phân rã thành Struct bộ nhớ nội bộ:</p>
+            
+            <table>
+                <tr><th>Thành Phần</th><th>Kiểu Dữ Liệu</th><th>Mô Tả Chức Năng</th></tr>
+                <tr><td>Header</td><td>uint8_t (0xAA)</td><td>Mã đánh dấu bắt đầu Frame</td></tr>
+                <tr><td>Motor ID</td><td>uint8_t</td><td>Định danh Driver đích (CL57C)</td></tr>
+                <tr><td>OP Code</td><td>uint8_t</td><td>Mã lệnh điều khiển (DIR / SPEED)</td></tr>
+                <tr><td>Data payload</td><td>uint16_t</td><td>Giá trị vận tốc hoặc góc quay mong muốn</td></tr>
+                <tr><td>CRC</td><td>uint8_t</td><td>Mã kiểm tra tính toàn vẹn dữ liệu</td></tr>
+                <tr><td>End frame</td><td>uint8_t (0x55)</td><td>Mã kết thúc gói tin</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <h2>3. Phân Tích Chuyên Sâu Tác Vụ Chuyển Động (MOTOR TASK)</h2>
+    <p>Tác vụ <span class="highlight">motor_task</span> nhận nhiệm vụ giải mã các thông điệp hành vi từ hàng đợi lệnh và chuyển đổi thành xung số vật lý điều khiển cơ cấu chấp hành. Tác vụ này áp dụng thiết kế phân tầng nghiêm ngặt (Layered Architecture) nhằm cách ly hoàn toàn logic ứng dụng nông nghiệp khỏi kiến trúc vi điều khiển.</p>
+
+    <div class="architecture-grid">
+        <div class="task-card motor-card">
+            <h3>Cấu Trúc Phân Tầng Của MOTOR TASK</h3>
+            
+            <div class="layer-item">
+                <strong>1. motor_task & motor_app (Application Layer)</strong>
+                Đóng vai trò điều phối viên. Tác vụ tương tác trực tiếp với hạt nhân OS thông qua hàm <code>k_msgq_get</code> ở chế độ blocking (K-FOREVER), tự động đưa task vào trạng thái ngủ sâu tiết kiệm năng lượng khi hàng đợi trống. Module <code>motor_app</code> phụ trách gom dữ liệu đo đạc (telemetry) và giám sát lỗi tổng thể.
+            </div>
+
+            <div class="layer-item">
+                <strong>2. motor_sm (Logic State Layer)</strong>
+                Bộ máy trạng thái hữu hạn (Finite State Machine). Chịu trách nhiệm theo dõi trạng thái hiện tại của hệ thống cơ khí và quyết định tính hợp lệ khi chuyển đổi trạng thái (Ví dụ: Ngăn lệnh chạy khi hệ thống đang ở trạng thái lỗi <code>MOTOR_FAULT</code>).
+            </div>
+
+            <div class="layer-item">
+                <strong>3. motor_drv & Abstraction Layer (Interface Layer)</strong>
+                Định nghĩa các lớp giao tiếp thuần ảo (Pure Virtual C++ Class). Lớp này hoạt động như một hợp đồng kỹ thuật, cung cấp các hàm điều khiển trừu tượng như <code>set_speed()</code>, <code>toggle_direction()</code> mà không chứa mã thực thi chi tiết của chip.
+            </div>
+
+            <div class="layer-item">
+                <strong>4. motor_hw (Hardware Adaption Layer)</strong>
+                Thực thi mã nhúng thấp nhất. Kế thừa trực tiếp giao diện từ lớp Abstraction, chứa mã gọi trực tiếp đến API điều khiển GPIO/PWM/Timer của Zephyr để thao tác trực tiếp lên thanh ghi cấu hình vật lý của chip STM32F407.
+            </div>
+        </div>
+
+        <div class="task-card motor-card">
+            <h3>Vòng Đời Quản Lý Trạng Thái (FSM)</h3>
+            <p>Hệ thống quản lý an toàn động cơ qua 5 trạng thái vận hành logic:</p>
+            <ul>
+                <li><strong>MOTOR_INIT:</strong> Khởi tạo chân ngoại vi, kiểm tra điện áp cấp nguồn lực (24V-48V).</li>
+                <li><strong>MOTOR_READY:</strong> Động cơ dừng, giữ nguyên vị trí, Driver CL57C ở chế độ On, sẵn sàng đón nhận dữ liệu từ hàng đợi.</li>
+                <li><strong>MOTOR_RUNNING:</strong> Đang phát chuỗi xung điều tốc (PUL) với tần số lên tới 200kHz.</li>
+                <li><strong>MOTOR_STOP:</strong> Giảm tốc tuyến tính có kiểm soát để triệt tiêu lực quán tính cơ khí.</li>
+                <li><strong>MOTOR_FAULT:</strong> Trạng thái bảo vệ khẩn cấp tối cao. Ngắt chân ENA ngay lập tức, thả trôi trục để bảo vệ phần cứng khi phát hiện quá tải.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>4. Giao Diện Định Tuyến Chân Phần Cứng Vật Lý (Hardware Wiring Interface)</h2>
+    <p>Kiến trúc kết nối vật lý cách ly quang chống nhiễu công nghiệp giữa vi điều khiển STM32F407VET (Xung nhịp 168 MHz) và mạch Driver điều khiển vòng kín Leadshine CL57C:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Chân Vi Điều Khiển (STM32)</th>
+                <th>Tín Hiệu Hệ Thống</th>
+                <th>Chân Đấu Nối Driver (CL57C)</th>
+                <th>Yêu Cầu Ràng Buộc Phần Cứng Vật Lý</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Nguồn Cấp Phụ 5V (Hạ áp)</td>
+                <td><strong>VCC 5V Common</strong></td>
+                <td>PUL+ / DIR+ / ENA+</td>
+                <td>Cung cấp dòng nuôi mạch LED phát quang nội bộ của cách ly quang (Optocoupler).</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold; color: var(--accent-purple);">PA8</td>
+                <td><strong>PUL- (Pulse Signal)</strong></td>
+                <td>PUL-</td>
+                <td>Ngõ ra phát chuỗi xung điều tốc (Tối đa 200kHz). Độ rộng xung tối thiểu hình học bắt buộc phải đạt <span class="highlight">&ge; 2.5 µs</span>.</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold; color: var(--accent-purple);">PE2</td>
+                <td><strong>DIR- (Direction Signal)</strong></td>
+                <td>DIR-</td>
+                <td>Ngõ ra quy định chiều quay logic (Mức 0: Tiến / Mức 1: Lùi).</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold; color: var(--accent-purple);">PE3</td>
+                <td><strong>ENA- (Enable Signal)</strong></td>
+                <td>ENA-</td>
+                <td>Mức thấp (0V): Khóa trục và cấp lực từ / Mức cao (5V): Giải phóng trục hoàn toàn.</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold; color: var(--accent-red);">PE4 (Cấu hình EXTI ISR)</td>
+                <td><strong>ALM+ (Alarm Event)</strong></td>
+                <td>ALM+</td>
+                <td>Tín hiệu báo lỗi từ Driver gửi về. Cấu hình ngắt cạnh lên phản hồi nhanh cấp tốc.</td>
+            </tr>
+            <tr>
+                <td>GND Chung</td>
+                <td><strong>Signal Ground</strong></td>
+                <td>ALM-</td>
+                <td>Đường nối đất tham chiếu chung cho mạch phản hồi cảnh báo lỗi.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>5. Các Tiêu Chuẩn An Toàn Thời Gian Thực Tối Cao (Critical Embedded Rules)</h2>
+    
+    <h3>A. Thuật Toán Đảo Chiều Chuyển Động Cơ Học (Direction Change Logic)</h3>
+    <p>Để ngăn chặn hiện tượng sốc cơ học làm mòn bánh răng của robot nông nghiệp hoặc gây ra lỗi quá dòng cục bộ tại Driver CL57C khi tốc độ di chuyển hiện tại lớn hơn không (<span class="highlight">Speed &gt; 0</span>), hệ thống bắt buộc phải điều phối luồng tuần tự theo thời gian thực như sau:</p>
+    <pre>
+// Tiến trình xử lý đổi hướng an toàn bên trong lớp motor_sm
+1. Hạ tần số xung điều khiển trên chân PA8 (PUL-) giảm dần tuyến tính về mức 0 Hz.
+2. Gọi hàm delay thời gian thực của OS, giữ nguyên trạng thái khóa trục từ 50 ms đến 100 ms để triệt tiêu động năng cơ khí.
+3. Thao tác chân logic PE2 (DIR-) để chuyển đổi mức điện áp hướng.
+4. Triển khai vòng lặp trễ phần cứng tối thiểu là 5 µs để lớp cách ly quang (Optocoupler) lật trạng thái điện áp hoàn toàn.
+5. Bắt đầu kích hoạt lại chu kỳ phát xung tăng tốc tuyến tính đạt vận tốc đích mong muốn.
+    </pre>
+
+    <div class="alert-panel">
+        <strong>CẢNH BÁO PHÁT TRIỂN CHƯƠNG TRÌNH NHÚNG HỆ THỐNG:</strong>
+        <ul>
+            <li><strong>Tuyệt đối không cấp phát động (No Post-Init Dynamic Memory Allocation):</strong> Toàn bộ các đối tượng như Ring Buffer của <code>cmd_task</code>, hàng đợi tin nhắn của Zephyr RTOS, hay bộ lưu cấu trúc FSM đều phải được định nghĩa bộ nhớ tĩnh lúc biên dịch (Compile-time static allocation). Nghiêm cấm sử dụng <code>malloc()</code> hoặc <code>free()</code> sau giai đoạn khởi tạo để triệt tiêu rủi ro phân mảnh bộ nhớ (Heap Fragmentation).</li>
+            <li><strong>Ràng buộc xử lý ngắt (ISR Execution Constraints):</strong> Cấm hoàn toàn việc sử dụng toán học số thực dấu phẩy động (Floating-point math) bên trong không gian chương trình phục vụ ngắt của chân <code>PE4 (ALM+)</code> và ngắt nhận dữ liệu UART của <code>cmd_hw</code> nhằm duy trì tính nhất quán của thanh ghi FPU hệ thống và tối ưu tốc độ phản hồi lỗi trong vài phần triệu giây.</li>
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>

@@ -3,7 +3,7 @@
 ## Hardware Platform
 - **MCU**: STM32F407VET (168 MHz 32-bit Cortex-M4, 192 KB RAM, 512 KB)
 - **Power**: Pin LiPo/Li-ion 24V-48V cho động cơ và hạ áp xuống 3.3V/5V cho MCU
-- **Step driver**: CL57C 24V-48V
+- **Step driver**: CL57C 24V-48V, 200Khz, Minimal pulse width 2.5 us
 
 ## Real-Time Constraints
 - a frame (formatted) will be sent from Master (PC or raspberry) through wifi, websever, bluetooth, UART-Serial
@@ -62,7 +62,6 @@
     typedef struct {
         MotorID_t ID; // ID of driver motor (CL57C 24V-48V)
         MotorState_t State;
-        MotorOPCode_t OPCode;
         MotorDirection_t Direction;
         MotorSpeed_t Speed;
     } MotorMessage_t;
@@ -71,7 +70,7 @@
     |Header|Motor ID|OP code|Data | CRC | END |
     Header: start frame 0xAA;
     Motor ID: ID of driver motor (CL57C 24V-48V)
-    OP code: will read from a json
+    OP code: DIR (direction) or SPE(speed)
     Data: Speed
     CRC: check sum
     END: 0x55
@@ -123,7 +122,8 @@ breaks the dependency between the motor driver and the hardware. only define .h 
 - **NEVER** use `malloc()`, `free()`, or any dynamic allocation after initialization
 - **NEVER** use `printf()` or any stdio functions (code bloat + undefined behavior)
 - **NEVER** use floating point in time-critical paths (no hardware FPU usage in ISRs)
-- **NEVER** poll sensors - use interrupt-driven reads where possible
+- **NEVER** poll sensors - use interrupt-driven reads where 
+- **NEVER** change DIR when SPEED > 0, if speed > 0 => decelerate speed (PUL) -> 0, waiting 50ms - 100 ms, change logic of DIR (0 forward or 1 backward) => **waiting minimum 5us** => Accelerate speed (accelerate PUL)
 
 ## Allowed Libraries
 - Using standard library of zephyr
@@ -167,10 +167,12 @@ STM32F407VET (GPIO)                 Driver CL57 (P1 Connector)
       |   Pin [PE3] ------+-------------->| ENA-                     |
       |                   |               |                          |
       |                   |               |                          |
-      |   GND  -----------+---------------+-- ALM+                   |
-      |   Pin [PE4] <-----+---------------+-- ALM-                   |
+      |   GND  -----------+---------------+-- ALM-                   |
+      |   Pin [PE4] <-----+---------------+-- ALM+                   |
       |                   |               |                          |
       +-------------------+               +--------------------------+
                ^
                |
         (Kết nối chung GND)
+
+
