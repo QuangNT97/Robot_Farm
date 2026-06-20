@@ -148,6 +148,8 @@ my_agri_robot/
 │       └── app_config.h        # Define hằng số project
 └── app.overlay                 # Định nghĩa các pin/peripheral trong DT
 
+This structure can be changed to suitable with this project and zephyr folder.
+
 ## Error Handling Strategy
 
 ## Wiring
