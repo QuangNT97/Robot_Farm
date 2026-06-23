@@ -144,6 +144,78 @@ events:
         mode: "cps"
         reason: "no_exist"
       -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot/ZephyrBuildConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot/zephyrbuild-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot/lib/cps/ZephyrBuild.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot/lib/cps/zephyrbuild.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot/share/cps/ZephyrBuild.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot/share/cps/zephyrbuild.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot_ninja/ZephyrBuildConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot_ninja/zephyrbuild-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot_ninja/lib/cps/ZephyrBuild.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot_ninja/lib/cps/zephyrbuild.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot_ninja/share/cps/ZephyrBuild.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot_ninja/share/cps/zephyrbuild.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot_west/ZephyrBuildConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot_west/zephyrbuild-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot_west/lib/cps/ZephyrBuild.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot_west/lib/cps/zephyrbuild.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot_west/share/cps/ZephyrBuild.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/build_my_agri_robot_west/share/cps/zephyrbuild.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
         path: "D:/DOCUMENT/RoboLife_Farm/zephyrproject/modules/ZephyrBuildConfig.cmake"
         mode: "config"
         reason: "no_exist"
@@ -301,7 +373,7 @@ events:
       names:
         - "ZephyrApp"
       search_paths:
-        - "D:/DOCUMENT/RoboLife_Farm/my_agri_robot"
+        - "D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot"
       path_suffixes:
         - ""
       paths:
@@ -340,27 +412,27 @@ events:
         mode: "cps"
         reason: "no_exist"
       -
-        path: "D:/DOCUMENT/RoboLife_Farm/my_agri_robot/ZephyrAppConfig.cmake"
+        path: "D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot/ZephyrAppConfig.cmake"
         mode: "config"
         reason: "no_exist"
       -
-        path: "D:/DOCUMENT/RoboLife_Farm/my_agri_robot/zephyrapp-config.cmake"
+        path: "D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot/zephyrapp-config.cmake"
         mode: "config"
         reason: "no_exist"
       -
-        path: "D:/DOCUMENT/RoboLife_Farm/my_agri_robot/lib/cps/ZephyrApp.cps"
+        path: "D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot/lib/cps/ZephyrApp.cps"
         mode: "cps"
         reason: "no_exist"
       -
-        path: "D:/DOCUMENT/RoboLife_Farm/my_agri_robot/lib/cps/zephyrapp.cps"
+        path: "D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot/lib/cps/zephyrapp.cps"
         mode: "cps"
         reason: "no_exist"
       -
-        path: "D:/DOCUMENT/RoboLife_Farm/my_agri_robot/share/cps/ZephyrApp.cps"
+        path: "D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot/share/cps/ZephyrApp.cps"
         mode: "cps"
         reason: "no_exist"
       -
-        path: "D:/DOCUMENT/RoboLife_Farm/my_agri_robot/share/cps/zephyrapp.cps"
+        path: "D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot/share/cps/zephyrapp.cps"
         mode: "cps"
         reason: "no_exist"
     found: null

@@ -1,0 +1,12 @@
+# Load Zephyr Arch Kconfig descriptions.
+osource "D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/arch/rx/Kconfig"
+osource "D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/arch/x86/Kconfig"
+osource "D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/arch/xtensa/Kconfig"
+osource "D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/arch/sparc/Kconfig"
+osource "D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/arch/riscv/Kconfig"
+osource "D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/arch/posix/Kconfig"
+osource "D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/arch/openrisc/Kconfig"
+osource "D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/arch/mips/Kconfig"
+osource "D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/arch/arm64/Kconfig"
+osource "D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/arch/arm/Kconfig"
+osource "D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/arch/arc/Kconfig"

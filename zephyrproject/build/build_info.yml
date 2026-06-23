@@ -1,7 +1,7 @@
 cmake:
   application:
-    configuration-dir: 'D:/DOCUMENT/RoboLife_Farm/my_agri_robot'
-    source-dir: 'D:/DOCUMENT/RoboLife_Farm/my_agri_robot'
+    configuration-dir: 'D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot'
+    source-dir: 'D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot'
   board:
     name: 'black_f407ve'
     path:
@@ -13,7 +13,7 @@ cmake:
      - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts/bindings'
     files:
      - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/boards/others/black_f407ve/black_f407ve.dts'
-     - 'D:/DOCUMENT/RoboLife_Farm/my_agri_robot/app.overlay'
+     - 'D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot/app.overlay'
     include-dirs:
      - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/modules/hal/ambiq/dts'
      - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/modules/hal/atmel/include'
@@ -41,13 +41,13 @@ cmake:
      - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts/arc'
      - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts'
     user-files:
-     - 'D:/DOCUMENT/RoboLife_Farm/my_agri_robot/app.overlay'
+     - 'D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot/app.overlay'
   kconfig:
     files:
      - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/boards/others/black_f407ve/black_f407ve_defconfig'
-     - 'D:/DOCUMENT/RoboLife_Farm/my_agri_robot/prj.conf'
+     - 'D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot/prj.conf'
     user-files:
-     - 'D:/DOCUMENT/RoboLife_Farm/my_agri_robot/prj.conf'
+     - 'D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot/prj.conf'
   toolchain:
     name: 'zephyr'
     path: 'C:/Users/hihi/zephyr-sdk-1.0.1'
@@ -56,6 +56,6 @@ cmake:
     zephyr-base: 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr'
 version: '0.1.0'
 west:
-  command: 'C:\Users\hihi\AppData\Local\Programs\Python\Python313\Scripts\west build -p always -b black_f407ve ..\my_agri_robot'
+  command: 'C:\Users\hihi\AppData\Local\Programs\Python\Python313\Scripts\west build -p always -b black_f407ve ..\Firmware\my_agri_robot'
   topdir: 'D:\DOCUMENT\RoboLife_Farm\zephyrproject'
   version: '1.5.0'

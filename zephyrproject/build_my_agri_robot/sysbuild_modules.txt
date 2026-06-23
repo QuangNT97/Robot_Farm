@@ -1,0 +1,1 @@
+"mcuboot":"D:/DOCUMENT/RoboLife_Farm/zephyrproject/bootloader/mcuboot":"D:/DOCUMENT/RoboLife_Farm/zephyrproject/bootloader/mcuboot/boot/zephyr/sysbuild"

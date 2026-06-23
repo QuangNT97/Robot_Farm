@@ -529,7 +529,7 @@ rule C_STATIC_LIBRARY_LINKER__kernel_
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = "C:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -SD:\DOCUMENT\RoboLife_Farm\my_agri_robot -BD:\DOCUMENT\RoboLife_Farm\zephyrproject\build
+  command = "C:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -SD:\DOCUMENT\RoboLife_Farm\Firmware\my_agri_robot -BD:\DOCUMENT\RoboLife_Farm\zephyrproject\build
   description = Re-running CMake...
   generator = 1
 

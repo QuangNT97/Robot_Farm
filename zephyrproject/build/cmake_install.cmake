@@ -1,4 +1,4 @@
-# Install script for directory: D:/DOCUMENT/RoboLife_Farm/my_agri_robot
+# Install script for directory: D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

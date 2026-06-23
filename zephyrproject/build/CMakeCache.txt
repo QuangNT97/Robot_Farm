@@ -18,10 +18,10 @@
 APPLICATION_BINARY_DIR:PATH=D:/DOCUMENT/RoboLife_Farm/zephyrproject/build
 
 //The application configuration folder
-APPLICATION_CONFIG_DIR:PATH=D:/DOCUMENT/RoboLife_Farm/my_agri_robot
+APPLICATION_CONFIG_DIR:PATH=D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot
 
 //Application Source Directory
-APPLICATION_SOURCE_DIR:PATH=D:/DOCUMENT/RoboLife_Farm/my_agri_robot
+APPLICATION_SOURCE_DIR:PATH=D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot
 
 //Selected board
 BOARD:STRING=black_f407ve
@@ -318,7 +318,7 @@ CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 // listed, e.g. CONF_FILE="prj1.conf;prj2.conf" The CACHED_CONF_FILE
 // is internal Zephyr variable used between CMake runs. To change
 // CONF_FILE, use the CONF_FILE variable.
-CONF_FILE:STRING=D:/DOCUMENT/RoboLife_Farm/my_agri_robot/prj.conf
+CONF_FILE:STRING=D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot/prj.conf
 
 //Path to a program.
 DTC:FILEPATH=C:/Users/hihi/AppData/Local/Microsoft/WinGet/Packages/oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe/usr/bin/dtc.exe
@@ -328,7 +328,7 @@ DTC:FILEPATH=C:/Users/hihi/AppData/Local/Microsoft/WinGet/Packages/oss-winget.dt
 // parameter. These settings will override the settings in the
 // board's .dts file. Multiple files may be listed, e.g. DTC_OVERLAY_FILE="dts1.overlay
 // dts2.overlay"
-DTC_OVERLAY_FILE:STRING=D:/DOCUMENT/RoboLife_Farm/my_agri_robot/app.overlay
+DTC_OVERLAY_FILE:STRING=D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot/app.overlay
 
 //Path to a program.
 GEN_KOBJECT_LIST:FILEPATH=D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/scripts/build/gen_kobject_list.py
@@ -415,7 +415,7 @@ Zephyr-Kernel_BINARY_DIR:STATIC=D:/DOCUMENT/RoboLife_Farm/zephyrproject/build
 Zephyr-Kernel_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
-Zephyr-Kernel_SOURCE_DIR:STATIC=D:/DOCUMENT/RoboLife_Farm/my_agri_robot
+Zephyr-Kernel_SOURCE_DIR:STATIC=D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot
 
 //The directory containing a CMake configuration file for Zephyr-sdk.
 Zephyr-sdk_DIR:PATH=C:/Users/hihi/zephyr-sdk-1.0.1/cmake
@@ -436,7 +436,7 @@ my_agri_robot_BINARY_DIR:STATIC=D:/DOCUMENT/RoboLife_Farm/zephyrproject/build
 my_agri_robot_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
-my_agri_robot_SOURCE_DIR:STATIC=D:/DOCUMENT/RoboLife_Farm/my_agri_robot
+my_agri_robot_SOURCE_DIR:STATIC=D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot
 
 
 ########################
@@ -544,7 +544,7 @@ CMAKE_GENERATOR_PLATFORM:INTERNAL=
 CMAKE_GENERATOR_TOOLSET:INTERNAL=
 //Source directory with the top level CMakeLists.txt file for this
 // project
-CMAKE_HOME_DIRECTORY:INTERNAL=D:/DOCUMENT/RoboLife_Farm/my_agri_robot
+CMAKE_HOME_DIRECTORY:INTERNAL=D:/DOCUMENT/RoboLife_Farm/Firmware/my_agri_robot
 //Name of CMakeLists files to read
 CMAKE_LIST_FILE_NAME:INTERNAL=CMakeLists.txt
 //ADVANCED property for variable: CMAKE_MAKE_PROGRAM

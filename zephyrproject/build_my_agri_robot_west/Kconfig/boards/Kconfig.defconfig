@@ -1,0 +1,2 @@
+# Load Zephyr board defconfig descriptions.
+osource "D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/boards/others/black_f407ve/Kconfig.defconfig"
