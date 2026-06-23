@@ -17,13 +17,19 @@ bool CmdParser::Parse(const uint8_t *frame, uint8_t len, MotorMessage_t &msg) co
                    |  static_cast<uint16_t>(frame[FRAME_IDX_DATA_LO]);
 
     switch (opcode) {
-    case OPCODE_SPE:
+    case OPCODE_SPE: {
+        /* Frame DATA carries speed in RPM. Convert to Hz for the driver:
+         *   Hz = RPM x MOTOR_PULSES_PER_REV / 60
+         * Use uint32_t arithmetic to avoid overflow before division.
+         * Motor HW layer clamps result at MOTOR_MAX_SPEED_HZ. */
+        uint32_t rpm  = static_cast<uint32_t>(data);
         msg.State     = MOTOR_STATE_RUNNING;
-        msg.Speed     = static_cast<MotorSpeed_t>(data);
+        msg.Speed     = rpm * MOTOR_PULSES_PER_REV / 60U;
         /* Direction unchanged - kept from last run command */
         msg.Direction = MOTOR_DIR_FORWARD;
-        LOG_DBG("CmdParser: SPE id=%u speed=%u", msg.ID, msg.Speed);
+        LOG_DBG("CmdParser: SPE id=%u rpm=%u hz=%u", msg.ID, (unsigned)rpm, msg.Speed);
         break;
+    }
 
     case OPCODE_DIR:
         msg.State     = MOTOR_STATE_RUNNING;

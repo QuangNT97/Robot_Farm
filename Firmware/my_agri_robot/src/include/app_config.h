@@ -49,5 +49,10 @@
 /* Maximum speed in Hz (CL57C: 200kHz max) */
 #define MOTOR_MAX_SPEED_HZ          200000U
 
+/* ---- Motor Pulses Per Revolution ---- */
+/* Default microstepping: 1600 pulses/rev (CL57C SW setting).
+ * Hz = RPM x MOTOR_PULSES_PER_REV / 60 */
+#define MOTOR_PULSES_PER_REV        1600U
+
 /* ---- Motor ID ---- */
 #define MOTOR_ID_DEFAULT            0x01U

@@ -57,8 +57,8 @@ int MotorDrv::Run(MotorDirection_t dir, MotorSpeed_t speed)
     /* Enable the driver if not already enabled */
     m_hw->Enable(true);
 
-    /* Ramp up to target speed */
-    AccelerateToTarget(speed);
+    /* Ramp to target speed (handles both acceleration and deceleration) */
+    RampToTarget(speed);
     return 0;
 }
 
@@ -93,35 +93,38 @@ bool MotorDrv::HealthCheck()
 
 void MotorDrv::DecelerateToZero()
 {
-    while (m_currentSpeed > 0U) {
-        if (m_currentSpeed > MOTOR_ACCEL_STEP_HZ) {
-            m_currentSpeed -= MOTOR_ACCEL_STEP_HZ;
-        } else {
-            m_currentSpeed = 0U;
-        }
-
-        if (m_currentSpeed == 0U) {
-            m_hw->StopPulse();
-        } else {
-            m_hw->SetPulseFrequency(m_currentSpeed);
-        }
-
-        k_msleep(MOTOR_ACCEL_INTERVAL_MS);
-    }
+    RampToTarget(0U);
 }
 
-void MotorDrv::AccelerateToTarget(MotorSpeed_t targetSpeed)
+void MotorDrv::RampToTarget(MotorSpeed_t targetSpeed)
 {
-    while (m_currentSpeed < targetSpeed) {
-        m_currentSpeed += MOTOR_ACCEL_STEP_HZ;
-        if (m_currentSpeed > targetSpeed) {
-            m_currentSpeed = targetSpeed;
-        }
-        m_hw->SetPulseFrequency(m_currentSpeed);
-        k_msleep(MOTOR_ACCEL_INTERVAL_MS);
+    if (m_currentSpeed == targetSpeed) {
+        return;
     }
-    /* Final set to ensure exact target */
-    m_currentSpeed = targetSpeed;
-    m_hw->SetPulseFrequency(m_currentSpeed);
-    LOG_DBG("Reached target speed: %u Hz", m_currentSpeed);
+
+    if (m_currentSpeed < targetSpeed) {
+        /* Acceleration ramp */
+        while (m_currentSpeed < targetSpeed) {
+            MotorSpeed_t remaining = targetSpeed - m_currentSpeed;
+            m_currentSpeed += (remaining > MOTOR_ACCEL_STEP_HZ)
+                              ? MOTOR_ACCEL_STEP_HZ : remaining;
+            m_hw->SetPulseFrequency(m_currentSpeed);
+            k_msleep(MOTOR_ACCEL_INTERVAL_MS);
+        }
+    } else {
+        /* Deceleration ramp — step down toward targetSpeed, not necessarily 0 */
+        while (m_currentSpeed > targetSpeed) {
+            MotorSpeed_t remaining = m_currentSpeed - targetSpeed;
+            m_currentSpeed -= (remaining > MOTOR_ACCEL_STEP_HZ)
+                              ? MOTOR_ACCEL_STEP_HZ : remaining;
+            if (m_currentSpeed == 0U) {
+                m_hw->StopPulse();
+            } else {
+                m_hw->SetPulseFrequency(m_currentSpeed);
+            }
+            k_msleep(MOTOR_ACCEL_INTERVAL_MS);
+        }
+    }
+
+    LOG_DBG("MotorDrv: ramp complete, speed=%u Hz", m_currentSpeed);
 }

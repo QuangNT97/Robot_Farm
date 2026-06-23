@@ -73,7 +73,7 @@
     Header: start frame 0xAA;
     Motor ID: ID of driver motor (CL57C 24V-48V)
     OP code: DIR (direction) or SPE(speed)
-    Data: Speed
+    Data: 2byte Speed (RPM not Hz)
     CRC: check sum
     END: 0x55
 
@@ -84,6 +84,8 @@
 Coordinate between component and communicate with other task through interface (MotorMessage_t), interactive with RTOS (message queue)
 #### cmd_parser 
 parse frame from master (through UART/ bluetooth/ wifi/ web server) to interface (MotorMessage_t) which using to communicate with other tasks
+call function parse from speed from frame to Hz. PULSE/Rev will define by #define, default is 1600 following below fomular:
+Hz = RPM x Revolution / 60 (Revolution default is 1600)
 #### cmd_receiver
 handling signal which receive from master (through UART/ bluetooth/ wifi/ web server) then gather them into a legal frame. Its only dependency is the abstraction layer. this must not include header file of cmd_hw
 #### cmd_transfer

@@ -25,36 +25,25 @@ zephyrproject/zephyr/
 
 là SDK/framework, còn firmware application của dự án nên nằm ở một thư mục riêng bên ngoài.
 
-## 2. Vị trí đề xuất trong repo hiện tại
-
-Repo hiện tại:
+## 2. Cấu trúc thực tế của repo
 
 ```text
-D:\DOCUMENT\RoboLife_Farm
-├── Architecture/
+AgricultureProject/
+├── Architecture/               # Tài liệu thiết kế, bug analysis
 ├── Tools/
-├── zephyrproject/
-│   ├── zephyr/
-│   ├── modules/
-│   ├── bootloader/
-│   └── tools/
-```
-
-Vị trí nên đặt firmware application:
-
-```text
-D:\DOCUMENT\RoboLife_Farm\Firmware\Farm_Controller_STM32F407
-```
-
-Cấu trúc tổng quan nên là:
-
-```text
-D:\DOCUMENT\RoboLife_Farm
-├── Architecture/
-├── Tools/
-├── Firmware/
-│   └── Farm_Controller_STM32F407/
-└── zephyrproject/
+├── Firmware/                   # Firmware application (tách khỏi Zephyr workspace)
+│   └── my_agri_robot/          # App Zephyr cho STM32F407
+│       ├── CMakeLists.txt
+│       ├── prj.conf
+│       ├── app.overlay
+│       └── src/
+│           ├── main.cpp
+│           ├── app_tasks/          # cmd_task, motor_task
+│           ├── subsystems/
+│           │   ├── comms/          # cmd_hw, cmd_receiver, cmd_parser, cmd_transfer
+│           │   └── motor_control/  # motor_hw, motor_drv, motor_sm, motor_app
+│           └── include/            # app_config.h, motor_interface.h
+└── zephyrproject/              # Zephyr RTOS workspace (không chứa app)
     ├── zephyr/
     ├── modules/
     ├── bootloader/
@@ -63,14 +52,33 @@ D:\DOCUMENT\RoboLife_Farm
 
 Trong đó:
 
-- `zephyrproject/`: workspace Zephyr, chứa Zephyr RTOS và module liên quan.
-- `Firmware/`: chứa source code firmware application của RoboLife Farm.
-- `Farm_Controller_STM32F407/`: app Zephyr chạy trên board `black_f407ve` hoặc STM32F407 tương ứng.
+- `zephyrproject/`: workspace Zephyr thuần tuý — không đặt application vào đây.
+- `Firmware/`: chứa toàn bộ source firmware application.
+- `my_agri_robot/`: app Zephyr chạy trên STM32F407VET với CL57C step driver.
 
+## 3. Build command
 
-Tóm lại:
+Vì app nằm ngoài `zephyrproject/`, cần set `ZEPHYR_BASE` trước khi build:
 
-- `zephyrproject/` dùng cho Zephyr workspace.
-- `Firmware/` dùng cho firmware application của RoboLife Farm.
-- Không nên viết app trực tiếp vào `zephyrproject/zephyr/`.
-- Nên tách rõ `domain`, `services`, `drivers`, `protocol`, `utils` để project dễ mở rộng và dễ test.
+```bash
+# Thiết lập môi trường Zephyr (chạy một lần mỗi terminal)
+source ~/AgricultureProject/zephyrproject/zephyr/zephyr-env.sh
+
+# Build app từ thư mục Firmware/my_agri_robot
+west build -b black_f407ve Firmware/my_agri_robot
+```
+
+Hoặc chỉ định thư mục app trực tiếp:
+
+```bash
+west build -b black_f407ve -- -DAPP_DIR=Firmware/my_agri_robot
+```
+
+`CMakeLists.txt` dùng `find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})` nên tương thích với cả hai cách.
+
+## 4. Nguyên tắc tổng quát
+
+- `zephyrproject/` dùng cho Zephyr workspace — chỉ chứa RTOS và modules.
+- `Firmware/` dùng cho firmware application — một subdirectory cho mỗi board/target.
+- Không viết app trực tiếp vào `zephyrproject/`.
+- Nên tách rõ `app_tasks`, `subsystems`, `include` để dễ mở rộng và test.

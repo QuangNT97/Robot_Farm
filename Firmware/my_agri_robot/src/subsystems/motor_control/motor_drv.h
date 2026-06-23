@@ -80,9 +80,14 @@ private:
     MotorDirection_t m_targetDir       {MOTOR_DIR_FORWARD};
     bool             m_initialized     {false};
 
-    /** Decelerate from current speed to 0, blocking with k_msleep steps. */
+    /** Decelerate from current speed to 0 (delegates to RampToTarget). */
     void DecelerateToZero();
 
-    /** Accelerate from 0 to targetSpeed in steps. */
-    void AccelerateToTarget(MotorSpeed_t targetSpeed);
+    /**
+     * @brief Ramp speed to targetSpeed in fixed steps (both directions).
+     *        Accelerates if targetSpeed > m_currentSpeed.
+     *        Decelerates if targetSpeed < m_currentSpeed.
+     *        Calls StopPulse() only when reaching exactly 0.
+     */
+    void RampToTarget(MotorSpeed_t targetSpeed);
 };
