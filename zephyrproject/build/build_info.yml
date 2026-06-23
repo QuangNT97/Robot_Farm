@@ -1,0 +1,61 @@
+cmake:
+  application:
+    configuration-dir: 'D:/DOCUMENT/RoboLife_Farm/my_agri_robot'
+    source-dir: 'D:/DOCUMENT/RoboLife_Farm/my_agri_robot'
+  board:
+    name: 'black_f407ve'
+    path:
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/boards/others/black_f407ve'
+    qualifiers: 'stm32f407xx'
+    revision: ''
+  devicetree:
+    bindings-dirs:
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts/bindings'
+    files:
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/boards/others/black_f407ve/black_f407ve.dts'
+     - 'D:/DOCUMENT/RoboLife_Farm/my_agri_robot/app.overlay'
+    include-dirs:
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/modules/hal/ambiq/dts'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/modules/hal/atmel/include'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/modules/hal/bouffalolab/include'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/modules/hal/bouffalolab/include/zephyr'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/modules/hal/gigadevice/include'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/modules/hal/microchip/include'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/modules/hal/microchip/dts'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/modules/hal/nuvoton/dts'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/modules/hal/nxp/dts'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/modules/hal/stm32/dts'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/modules/hal/ti/dts'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/include'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/include/zephyr'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts/common'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts/vendor'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts/rx'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts/x86'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts/xtensa'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts/sparc'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts/riscv'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts/posix'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts/arm64'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts/arm'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts/arc'
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/dts'
+    user-files:
+     - 'D:/DOCUMENT/RoboLife_Farm/my_agri_robot/app.overlay'
+  kconfig:
+    files:
+     - 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr/boards/others/black_f407ve/black_f407ve_defconfig'
+     - 'D:/DOCUMENT/RoboLife_Farm/my_agri_robot/prj.conf'
+    user-files:
+     - 'D:/DOCUMENT/RoboLife_Farm/my_agri_robot/prj.conf'
+  toolchain:
+    name: 'zephyr'
+    path: 'C:/Users/hihi/zephyr-sdk-1.0.1'
+  zephyr:
+    version: '4.4.99'
+    zephyr-base: 'D:/DOCUMENT/RoboLife_Farm/zephyrproject/zephyr'
+version: '0.1.0'
+west:
+  command: 'C:\Users\hihi\AppData\Local\Programs\Python\Python313\Scripts\west build -p always -b black_f407ve ..\my_agri_robot'
+  topdir: 'D:\DOCUMENT\RoboLife_Farm\zephyrproject'
+  version: '1.5.0'
