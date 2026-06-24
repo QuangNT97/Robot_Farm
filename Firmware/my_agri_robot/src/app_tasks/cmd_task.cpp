@@ -48,10 +48,16 @@ void CmdTask::Run()
     uint8_t frame[FRAME_SIZE];
 
     while (true) {
-        /* Block waiting for a complete frame from the interrupt handler */
-        int ret = k_msgq_get(&m_frameQueue, frame, K_FOREVER);
+        /* Wait up to 50ms for a command frame from master */
+        int ret = k_msgq_get(&m_frameQueue, frame, K_MSEC(50));
         if (ret == 0) {
             HandleFrame(frame, FRAME_SIZE);
+        }
+
+        /* Poll motor notify queue (non-blocking) and forward to master */
+        MotorNotify_t notify {};
+        if (m_motorTask->ReadNotify(notify, K_NO_WAIT) == 0) {
+            m_transfer.SendNotify(m_txSeqID++, notify);
         }
     }
 }
@@ -69,6 +75,16 @@ void CmdTask::OnFrameReady(const uint8_t *frame, uint8_t len, void *ctx)
 
 void CmdTask::HandleFrame(const uint8_t *frame, uint8_t len)
 {
+    uint8_t seqId = frame[FRAME_IDX_SEQ_ID];
+
+    /* Duplicate detection: same SeqID as last frame → resend ACK, skip execution */
+    if (seqId == m_lastSeqID) {
+        LOG_WRN("CmdTask: duplicate SeqID=0x%02X, ACK only", seqId);
+        m_transfer.SendAck(seqId, frame[FRAME_IDX_MOTOR_ID], frame[FRAME_IDX_OPCODE]);
+        return;
+    }
+    m_lastSeqID = seqId;
+
     MotorMessage_t msg {};
     if (!m_parser.Parse(frame, len, msg)) {
         LOG_WRN("CmdTask: frame parse failed");
@@ -85,19 +101,19 @@ void CmdTask::HandleFrame(const uint8_t *frame, uint8_t len)
         m_lastDirection = msg.Direction;
     }
 
-    LOG_DBG("CmdTask: parsed id=%u state=%d speed=%u dir=%d",
-            msg.ID, msg.State, msg.Speed, msg.Direction);
+    LOG_DBG("CmdTask: seq=0x%02X id=%u state=%d speed=%u dir=%d",
+            seqId, msg.ID, msg.State, msg.Speed, msg.Direction);
 
     /* Post to motor_task - non-blocking (drop if queue full) */
     int ret = m_motorTask->PostMessage(msg);
     if (ret < 0) {
         LOG_WRN("CmdTask: motor_task queue full, message dropped");
-        m_transfer.SendFault(msg.ID, 0x01U);
+        m_transfer.SendFault(seqId, msg.ID, 0x01U);
         return;
     }
 
-    /* Send ACK back to master */
-    m_transfer.SendAck(msg.ID, frame[FRAME_IDX_OPCODE]);
+    /* Send ACK back to master with echoed SeqID */
+    m_transfer.SendAck(seqId, msg.ID, frame[FRAME_IDX_OPCODE]);
 }
 
 extern "C" void CmdTask_ThreadEntry(void *p1, void *p2, void *p3)

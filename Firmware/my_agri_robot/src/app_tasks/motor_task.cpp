@@ -22,6 +22,10 @@ int MotorTask::Init()
     k_msgq_init(&m_msgq, reinterpret_cast<char *>(m_msgqBuf),
                  sizeof(MotorMessage_t), MOTOR_MSG_QUEUE_DEPTH);
 
+    /* Initialize notify queue (motor_task -> cmd_task direction) */
+    k_msgq_init(&m_notifyQueue, reinterpret_cast<char *>(m_notifyQueueBuf),
+                 sizeof(MotorNotify_t), NOTIFY_MSG_QUEUE_DEPTH);
+
     /* Initialize event flags for ALM notification */
     k_event_init(&m_events);
 
@@ -43,6 +47,9 @@ int MotorTask::Init()
 
     /* Run health check and trigger SM transition */
     bool healthy = m_drv.HealthCheck();
+    if (!healthy) {
+        m_lastFaultCode = FAULT_CODE_HEALTH_FAIL;
+    }
     m_sm.ProcessEvent(healthy ? MOTOR_EVT_INIT_OK : MOTOR_EVT_INIT_FAIL);
 
     LOG_INF("MotorTask initialized, state=%s", healthy ? "READY" : "FAULT");
@@ -52,6 +59,11 @@ int MotorTask::Init()
 int MotorTask::PostMessage(const MotorMessage_t &msg)
 {
     return k_msgq_put(&m_msgq, &msg, K_NO_WAIT);
+}
+
+int MotorTask::ReadNotify(MotorNotify_t &notify, k_timeout_t timeout)
+{
+    return k_msgq_get(&m_notifyQueue, &notify, timeout);
 }
 
 void MotorTask::Run()
@@ -65,6 +77,7 @@ void MotorTask::Run()
             k_event_clear(&m_events, EVT_ALM);
             LOG_WRN("MotorTask: ALM event received");
             m_app.NotifyAlarm();
+            m_lastFaultCode = FAULT_CODE_ALM;
             m_sm.ProcessEvent(MOTOR_EVT_FAULT);
         }
 
@@ -75,6 +88,7 @@ void MotorTask::Run()
         } else if (ret == -EAGAIN) {
             /* Timeout - check faults periodically */
             if (m_app.CheckFaults()) {
+                m_lastFaultCode = FAULT_CODE_ALM;
                 m_sm.ProcessEvent(MOTOR_EVT_FAULT);
             }
         }
@@ -122,9 +136,25 @@ void MotorTask::OnAlarmISR(void *ctx)
 
 void MotorTask::OnStateChange(MotorState_t newState, void *ctx)
 {
-    ARG_UNUSED(newState);
-    ARG_UNUSED(ctx);
-    /* Hook point: could notify cmd_task to send status to master */
+    MotorTask *self = static_cast<MotorTask *>(ctx);
+
+    /* Convert Hz -> RPM for the frame (master unit) */
+    MotorSpeed_t speedHz = self->m_drv.GetCurrentSpeed();
+    uint16_t speedRPM = static_cast<uint16_t>(
+        (speedHz * 60U) / MOTOR_PULSES_PER_REV);
+
+    MotorNotify_t notify {};
+    notify.ID        = MOTOR_ID_DEFAULT;
+    notify.state     = newState;
+    notify.speedRPM  = speedRPM;
+    notify.faultCode = (newState == MOTOR_STATE_FAULT)
+                       ? self->m_lastFaultCode
+                       : FAULT_CODE_NONE;
+
+    int ret = k_msgq_put(&self->m_notifyQueue, &notify, K_NO_WAIT);
+    if (ret < 0) {
+        LOG_WRN("MotorTask: notify queue full, state=%d dropped", (int)newState);
+    }
 }
 
 /* C-linkage trampoline for K_THREAD_DEFINE */

@@ -18,11 +18,14 @@ bool CmdParser::Parse(const uint8_t *frame, uint8_t len, MotorMessage_t &msg) co
 
     switch (opcode) {
     case OPCODE_SPE: {
-        /* Frame DATA carries speed in RPM. Convert to Hz for the driver:
-         *   Hz = RPM x MOTOR_PULSES_PER_REV / 60
-         * Use uint32_t arithmetic to avoid overflow before division.
-         * Motor HW layer clamps result at MOTOR_MAX_SPEED_HZ. */
-        uint32_t rpm  = static_cast<uint32_t>(data);
+        /* Clamp RPM to software limit before conversion (architecture rule) */
+        uint32_t rpm = static_cast<uint32_t>(data);
+        if (rpm > MOTOR_MAX_SPEED_RPM) {
+            LOG_WRN("CmdParser: RPM %u exceeds limit %u, clamped",
+                    (unsigned)rpm, MOTOR_MAX_SPEED_RPM);
+            rpm = MOTOR_MAX_SPEED_RPM;
+        }
+        /* Convert RPM to Hz: Hz = RPM x MOTOR_PULSES_PER_REV / 60 */
         msg.State     = MOTOR_STATE_RUNNING;
         msg.Speed     = rpm * MOTOR_PULSES_PER_REV / 60U;
         /* Direction unchanged - kept from last run command */

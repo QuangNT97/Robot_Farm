@@ -1,3 +1,4 @@
+Ver 1.1.0
 # Agriculture auto robot project
 
 ## Hardware Platform
@@ -10,6 +11,8 @@
 - cmd task receive the frame by interrupt, if a frame is detected it will be parsed to interface MotorMessage_t
 - cmd task save the parsed interface MotorMessage_t to message queue
 - motor task read queue and execute coresponding task base on MotorMessage_t
+- Define Limit frequency of CL57C is 150Khz
+- Define limit speed (RPM) from master is 5000RPM
 
 ## Architecture
 - **OS** (using zephyr)
@@ -61,6 +64,7 @@
 - The SM does not block execution; it operates on an event-driven basis via `MotorMessage_t`.
 
 **MotorMessage_t**
+cmd_task ──(MotorMessage_t)──► motor_task  
     typedef struct {
         MotorID_t ID; // ID of driver motor (CL57C 24V-48V)
         MotorState_t State;
@@ -69,11 +73,36 @@
     } MotorMessage_t;
 
 **Frame Format**
-    |Header|Motor ID|OP code|Data | CRC | END |
+Master(PC) ──► Slave (STM32)
+    |Header| Sequence ID |Motor ID|OP code|Data | CRC | END |
     Header: start frame 0xAA;
+    Sequence ID: to sync sequence between master and stm32 (Slave), to avoid miss frame, avoid duplicate and error
     Motor ID: ID of driver motor (CL57C 24V-48V)
     OP code: DIR (direction) or SPE(speed)
     Data: 2byte Speed (RPM not Hz)
+    CRC: check sum
+    END: 0x55
+
+
+**MotorNotify_t**
+cmd_task ◄─(MotorNotify_t)─── motor_task   [cần thêm]
+    typedef struct {
+        MotorID_t    ID;
+        MotorState_t state;
+        MotorSpeed_t speedHz;
+        uint8_t      faultCode;  // 0 nếu không phải fault
+    } MotorNotify_t;
+
+**Frame Format**
+Slave (STM32) ──► Master(PC)
+    |Header| TxSeqID |Motor ID|OP code|State | SpeedHI | SpeedLO | FaultCode | CRC | END |
+    Header: start frame 0xAA;
+    TxSeqID: to sync sequence from stm32 (Slave) and Master(PC), to avoid miss frame, avoid duplicate and error
+    Motor ID: ID of driver motor (CL57C 24V-48V)
+    OP code: STATUS or FAULT
+    State: Current state machine
+    SpeedHI, SpeedLO: HZ, but will be calculate to RPM before send to Master
+    FaultCode: 0x00 = không có lỗi , 0x01 = ALM signal từ CL57C, 0x02 = motor_task queue full
     CRC: check sum
     END: 0x55
 

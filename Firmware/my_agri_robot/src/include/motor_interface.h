@@ -34,6 +34,18 @@ typedef struct {
     MotorSpeed_t    Speed;      /**< Desired speed in Hz (0 = stop) */
 } MotorMessage_t;
 
+/**
+ * @brief Unsolicited notification from motor_task to cmd_task.
+ *        Placed in k_msgq (motor_task → cmd_task direction).
+ *        cmd_task reads this and builds a 10-byte NOTIFY frame to master.
+ */
+typedef struct {
+    MotorID_t    ID;
+    MotorState_t state;
+    uint16_t     speedRPM;   /**< Current speed in RPM (0-5000) */
+    uint8_t      faultCode;  /**< FAULT_CODE_* (0x00 = no fault) */
+} MotorNotify_t;
+
 /** Events internal to motor_sm (state machine events) */
 typedef enum : uint8_t {
     MOTOR_EVT_INIT_OK   = 0,   /**< Health check passed */

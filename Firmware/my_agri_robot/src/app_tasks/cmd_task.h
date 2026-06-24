@@ -66,6 +66,12 @@ private:
 
     /* Track last known direction so SPE command preserves it */
     MotorDirection_t m_lastDirection {MOTOR_DIR_FORWARD};
+
+    /* Last received SeqID for duplicate frame detection (0xFF = no frame yet) */
+    uint8_t m_lastSeqID {0xFFU};
+
+    /* Slave-owned TX sequence ID for unsolicited notify frames to master */
+    uint8_t m_txSeqID {0x00U};
 };
 
 extern "C" void CmdTask_ThreadEntry(void *p1, void *p2, void *p3);

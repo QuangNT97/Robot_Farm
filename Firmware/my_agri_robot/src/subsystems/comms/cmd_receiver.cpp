@@ -75,8 +75,9 @@ void CmdReceiver::ProcessByte(uint8_t byte)
 bool CmdReceiver::ValidateCRC(const uint8_t *frame, uint8_t len)
 {
     ARG_UNUSED(len);
-    /* CRC = XOR of MotorID, OP, DataHI, DataLO (bytes 1..4) */
-    uint8_t crc = frame[FRAME_IDX_MOTOR_ID]
+    /* CRC = XOR of SeqID, MotorID, OP, DataHI, DataLO */
+    uint8_t crc = frame[FRAME_IDX_SEQ_ID]
+                ^ frame[FRAME_IDX_MOTOR_ID]
                 ^ frame[FRAME_IDX_OPCODE]
                 ^ frame[FRAME_IDX_DATA_HI]
                 ^ frame[FRAME_IDX_DATA_LO];

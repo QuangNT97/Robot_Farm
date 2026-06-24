@@ -36,6 +36,15 @@ public:
     int PostMessage(const MotorMessage_t &msg);
 
     /**
+     * @brief Read one MotorNotify_t from the notify queue (motor_task → cmd_task).
+     *        Called by cmd_task to poll for unsolicited state/fault notifications.
+     * @param notify   Output: notify data.
+     * @param timeout  K_NO_WAIT for non-blocking poll.
+     * @return 0 on success, -EAGAIN if queue empty.
+     */
+    int ReadNotify(MotorNotify_t &notify, k_timeout_t timeout);
+
+    /**
      * @brief Thread entry function (registered with K_THREAD_DEFINE).
      *        Loops forever reading the message queue and driving the SM.
      */
@@ -53,6 +62,13 @@ private:
     /* Message queue: cmd_task -> motor_task */
     struct k_msgq m_msgq;
     uint8_t       m_msgqBuf[MOTOR_MSG_QUEUE_DEPTH * sizeof(MotorMessage_t)];
+
+    /* Notify queue: motor_task -> cmd_task (unsolicited state/fault reports) */
+    struct k_msgq m_notifyQueue;
+    uint8_t       m_notifyQueueBuf[NOTIFY_MSG_QUEUE_DEPTH * sizeof(MotorNotify_t)];
+
+    /* Tracks reason for latest fault transition (set before ProcessEvent FAULT) */
+    uint8_t m_lastFaultCode {FAULT_CODE_NONE};
 
     /* Event flag for ALM signal (from ISR -> task) */
     struct k_event m_events;
